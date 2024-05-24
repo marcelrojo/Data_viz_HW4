@@ -9,9 +9,7 @@ library(dplyr)
 library(plotly)
 library(ggiraph)
 
-
-
-# europe map
+# europe map - data
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
 # dataframe country, frequency of hosting eurovsion event
@@ -54,9 +52,6 @@ p <- ggplot(world) +
   labs(fill = "Number of events") +
   theme(legend.position = "null")
 
-p
-#p_interactive <- ggplotly(p)
-#p_interactive
 widg <- girafe(ggobj = p,
                width_svg = 10,
                height_svg = 7)
