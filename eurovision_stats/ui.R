@@ -6,54 +6,39 @@ library(rnaturalearthdata)
 library(dplyr)
 library(plotly)
 library(ggiraph)
+library(shinydashboard)
 
-fluidPage(# ------> Custom CSS - font from google fonts <------
-          tags$style(
-            HTML(
-              "
-          @import url('https://fonts.googleapis.com/css2?family=Cantarell:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-          body {
-          	background-color: #010039;
-           	color: white;
-          }
-
-          h2 {
-          	font-family: 'Cantarell', sans-serif;
-          }
-
-          .shiny-input-container {
-          	color: white;
-          }"
-            )
-          ),
-          
-          # ------> Application title <------
-          titlePanel(div(
-            style = "display: flex; align-items: baseline;",
-            div("EUROVISION", style = "color: #FFF400; font-size: 30px; font-weight: 700; font-family: 'Cantarell', sans-serif; margin-right: 10px;"),
-            div("STATISTICS", style = "color: white; font-size: 30px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
-          )),
-          # sidebarLayout(
-          #   sidebarPanel(
-          #     # You can add input elements here if needed
-          #   ),
-          #   mainPanel(
-          #     girafeOutput("map")
-          #   )
-          # ),
-          splitLayout(
-            girafeOutput("map"),
-            girafeOutput("circles")
-          )
-          )
-
-
-
-
-
-
-
-
-
-
-
+dashboardPage(
+  dashboardHeader(title = div(
+    style = "display: flex; align-items: baseline; justify-content: center; margin-top: 2px;",
+    div("EUROVISION", style = "color: #FFF400; font-size: 14px; font-weight: 700; font-family: 'Cantarell', sans-serif; margin-right: 10px;"),
+    div("STATISTICS", style = "color: white; font-size: 14px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
+  )),
+  dashboardSidebar(
+    # main page
+    # maybe some other pages
+  ),
+  dashboardBody(
+    includeCSS("www/style.css"),
+    fluidRow(column(
+      width = 10,
+      div(
+        style = "display: flex; align-items: baseline; justify-content: left; margin-top: 1px;",
+        div("EUROVISION", style = "color: #FFF400; font-size: 30px; font-weight: 700; font-family: 'Cantarell', sans-serif; margin-right: 10px;"),
+        div("STATISTICS", style = "color: white; font-size: 30px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
+      )
+    )),
+    fluidRow(splitLayout(
+      box(
+        title = "The Most Frequent Eurovision Hosts", 
+        width = 10,
+        girafeOutput("map")
+      ),
+      box(
+        title = "The Most Common Language In Eurovision Songs", 
+        width = 10,
+        girafeOutput("circles")
+    ))
+  )
+)
+)

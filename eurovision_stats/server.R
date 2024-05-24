@@ -51,8 +51,7 @@ function(input, output, session) {
       coord_sf(xlim = c(-25, 50),
                ylim = c(35, 70),
                expand = FALSE) +
-      labs(fill = "Number of events",
-           title = "Which Countries Have Been the Most Frequent Eurovision Hosts?") +
+      labs(fill = "Number of events") +
       theme(legend.position = "null",
             panel.background = element_rect(fill = "#010039"),
             plot.background = element_rect(fill = "#010039"),
@@ -104,13 +103,12 @@ function(input, output, session) {
       scale_size_continuous(range = c(3,7)) +
       theme_void() + 
       coord_equal() +
-      labs(title = "What Is The Most Common Language In Eurovision Songs?") +
       theme(legend.position = "null",
             panel.background = element_rect(fill = "#010039"),
             plot.background = element_rect(fill = "#010039"),
             plot.title = element_text(color = "white", size = 20, hjust = 0.5))
     
-    widg <- girafe(ggobj = p, width_svg = 10, height_svg = 10)
+    widg <- girafe(ggobj = p, width_svg = 10, height_svg = 8)
   })
   
 }
