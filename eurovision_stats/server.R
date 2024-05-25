@@ -277,6 +277,7 @@ function(input, output, session) {
       geom_text(aes(x = reorder(Song, Grand.Final.Points), y = max(Grand.Final.Points)/38, label = paste0("\"",Song,"\"")), 
                 color = "white", size = 5, fontface = "bold", vjust = 0.5, hjust = 0) +
       scale_fill_manual(values = custom_colors) +
+      geom_point(size=12, color="black", y=0)+
       geom_flag(aes(y=0, country=Code), size=10)+
       labs(title = paste("Most points received ", year1, " - ", year2)) +
       coord_flip() +
