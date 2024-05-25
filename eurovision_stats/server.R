@@ -9,6 +9,10 @@ library(ggplot2)
 library(packcircles)
 library(tidyverse)
 library(highcharter)
+#devtools::install_github("ellisp/ggflags")
+library(ggflags)
+library(countrycode)
+
 
 
 function(input, output, session) {
@@ -253,6 +257,7 @@ function(input, output, session) {
       mutate(Grand.Final.Points = as.integer(Grand.Final.Points)) %>%
       arrange(desc(Grand.Final.Points)) %>%
       head(10)
+    most_points$Code<- tolower(countrycode(most_points$Country, "country.name", "iso2c"))
     
     custom_colors <- c(
       "#6B10C5",
@@ -269,9 +274,10 @@ function(input, output, session) {
     
     g <- ggplot(most_points, aes(x = reorder(Song, Grand.Final.Points), y = Grand.Final.Points, fill = reorder(Song, - Grand.Final.Points))) +
       geom_col_interactive(aes(tooltip = paste0(Country, "<br> \"", Song,"\" by ", Artist, "<br>Year: ", Year, "<br>Points: ", Grand.Final.Points))) +
-      geom_text(aes(x = reorder(Song, Grand.Final.Points), y = 0, label = paste0("\"",Song,"\"")), 
+      geom_text(aes(x = reorder(Song, Grand.Final.Points), y = max(Grand.Final.Points)/38, label = paste0("\"",Song,"\"")), 
                 color = "white", size = 5, fontface = "bold", vjust = 0.5, hjust = 0) +
       scale_fill_manual(values = custom_colors) +
+      geom_flag(aes(y=0, country=Code), size=10)+
       labs(title = paste("Most points received ", year1, " - ", year2)) +
       coord_flip() +
       theme(

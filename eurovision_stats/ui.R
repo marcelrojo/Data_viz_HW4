@@ -7,6 +7,8 @@ library(dplyr)
 library(plotly)
 library(ggiraph)
 library(shinydashboard)
+library(highcharter)
+
 
 dashboardPage(
   dashboardHeader(
