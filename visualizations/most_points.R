@@ -12,9 +12,9 @@ data=read.csv("eurovision_results.csv")
 #Make bar charts of top 10 songs with most points in the final in each system
 #Filter if points is not numerical value
 
-most_points_old <- data %>%
+most_points_old_pre_semis <- data %>%
   filter(
-    Year >= 1975 & Year <= 2015,
+    Year >= 1975 & Year <= 2003,
     !is.na(as.numeric(Grand.Final.Points))
   )%>%
   mutate(Grand.Final.Points = as.integer(Grand.Final.Points)) %>%
@@ -31,9 +31,9 @@ most_points_new <- data %>%
   head(10)
 
 
-most_points_other <- data %>%
+most_points_old <- data %>%
   filter(
-    Year >= 1956 & Year <= 1974,
+    Year >= 2004 & Year <= 2015,
     !is.na(as.numeric(Grand.Final.Points)) 
   ) %>%
   mutate(Grand.Final.Points = as.integer(Grand.Final.Points)) %>%
@@ -77,13 +77,13 @@ g <- ggplot(most_points_new, aes(x = reorder(Song, Grand.Final.Points), y = Gran
 widg <- girafe(ggobj = g, width_svg = 10, height_svg = 10)
 widg
 
-#Most points received in the old system
+#Most points received in the old system with more countries taking part -> semi finals starte to happen
 g <- ggplot(most_points_old, aes(x = reorder(Song, Grand.Final.Points), y = Grand.Final.Points, fill = Country)) +
   geom_col_interactive(aes(tooltip = paste0(Country, "<br> \"", Song,"\" by ", Artist, "<br>Year: ", Year, "<br>Points: ", Grand.Final.Points))) +
   geom_text(aes(x = reorder(Song, Grand.Final.Points), y = 0, label = paste0("\"",Song,"\"")), 
             color = "white", size = 5, fontface = "bold", vjust = 0.5, hjust = 0) +
   scale_fill_manual(values = custom_colors) +
-  labs(title = "Most points received 1975-2015") +
+  labs(title = "Most points received 2004-2015") +
   coord_flip() +
   theme(
     legend.position = "none",
@@ -101,13 +101,13 @@ g <- ggplot(most_points_old, aes(x = reorder(Song, Grand.Final.Points), y = Gran
 widg <- girafe(ggobj = g, width_svg = 10, height_svg = 10)
 widg
 
-#Most points received before consistent pointing scheme
-g <- ggplot(most_points_other, aes(x = reorder(Song, Grand.Final.Points), y = Grand.Final.Points, fill = Country)) +
+#Most points received in old system before the semi finals
+g <- ggplot(most_points_old_pre_semis, aes(x = reorder(Song, Grand.Final.Points), y = Grand.Final.Points, fill = Country)) +
   geom_col_interactive(aes(tooltip = paste0(Country, "<br> \"", Song,"\" by ", Artist, "<br>Year: ", Year, "<br>Points: ", Grand.Final.Points))) +
   geom_text(aes(x = reorder(Song, Grand.Final.Points), y = 0, label = paste0("\"",Song,"\"")), 
             color = "white", size = 5, fontface = "bold", vjust = 0.5, hjust = 0) +
   scale_fill_manual(values = custom_colors) +
-  labs(title = "Most points received 1956-1974") +
+  labs(title = "Most points received 1975-2003") +
   coord_flip() +
   theme(
     legend.position = "none",
