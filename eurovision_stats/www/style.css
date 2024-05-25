@@ -16,7 +16,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .skin-blue .main-header .logo {
-  background-color: #010039;
+  background-color: #5A00D4;
   font-family: 'Cantarell', sans-serif;
 }
 
@@ -64,7 +64,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .box-header .box-title {
   background-color: #010039;
-  color: white;
+  color: #FF45DF;
   font-family: 'Cantarell', sans-serif;
 }
 
@@ -74,3 +74,4 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
   font-family: 'Cantarell', sans-serif;
 }
+

@@ -2,7 +2,7 @@ library(dplyr)
 library(tidyverse)
 library(highcharter)
 
-data <- read.csv("eurovision_results.csv")
+data <- read.csv("../eurovision_stats/datasets/eurovision_results.csv")
 
 
 data_finals <- data %>%
