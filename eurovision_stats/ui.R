@@ -9,6 +9,9 @@ library(ggiraph)
 library(shinydashboard)
 library(highcharter)
 
+data_to_use<-read.csv("datasets/eurovision_results.csv")
+Countries_list<-sort(unique(data_to_use$Country))
+Years_list<-data_to_use$Year
 
 dashboardPage(
   dashboardHeader(
@@ -21,7 +24,8 @@ dashboardPage(
   dashboardSidebar(
     includeCSS("www/style.css"),
     menuItem("Main page", tabName = "main"),
-    menuItem("Other page", tabName = "other")
+    menuItem("Other page", tabName = "other"),
+    menuItem("Country Placements", tabName = "placements")
     # maybe some other pages
   ),
   dashboardBody(tabItems(
@@ -76,7 +80,34 @@ dashboardPage(
             width = 12,
             girafeOutput("points")),
       ))
+    ),
+    tabItem(
+      tabName = "placements",
+      includeCSS("www/style.css"),
+      fluidRow(column(
+        width = 10,
+        div(
+          style = "display: flex; align-items: baseline; justify-content: left; margin-top: 1px;",
+          div("EUROVISION", style = "color: #FFF400; font-size: 30px; font-weight: 700; font-family: 'Cantarell', sans-serif; margin-right: 10px;"),
+          div("STATISTICS", style = "color: white; font-size: 30px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
+        )
+      )),
+      fluidRow(splitLayout(
+        box(
+          selectInput("countries", "Select up to 5 countries:", choices = unique(Countries_list),
+                      selected="Poland", multiple = TRUE),
+          sliderInput("years", "Select Year Range:", min = min(Years_list),
+                      max = max(Years_list),
+                      value = c(min(Years_list), 
+                                max(Years_list)), step = 1, sep = ""),
+          height = 200
+        ),
+        box(title = "Placements over time",
+            width = 12,
+            girafeOutput("placements_plot"))
+      ))
     )
+    
   ))
 )
   
