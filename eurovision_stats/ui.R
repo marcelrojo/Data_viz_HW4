@@ -76,7 +76,7 @@ dashboardPage(
           ),
           height = 170,
         ),
-        box(title = "Most Points Scored",
+        box(title = "Most Points Received",
             width = 12,
             girafeOutput("points")),
       ))
@@ -102,7 +102,7 @@ dashboardPage(
                                 max(Years_list)), step = 1, sep = ""),
           height = 200
         ),
-        box(title = "Placements over time",
+        box(title = "Change of Placements Over Time",
             width = 12,
             girafeOutput("placements_plot"))
       ))

@@ -279,7 +279,6 @@ function(input, output, session) {
       scale_fill_manual(values = custom_colors) +
       geom_point(size=12, color="black", y=0)+
       geom_flag(aes(y=0, country=Code), size=10)+
-      labs(title = paste("Most points received ", year1, " - ", year2)) +
       coord_flip() +
       theme(
         legend.position = "none",
@@ -332,8 +331,7 @@ function(input, output, session) {
       scale_fill_manual(values = custom_colors) +
       scale_color_manual(values = custom_colors) +
       scale_y_reverse(name = "Place", breaks = seq(1, max(selected_data$Grand.Final.Place, na.rm = TRUE), 1)) +
-      labs(title = "Changes in Eurovision Grand Final Places Over Time",
-           x = "Year",
+      labs(x = "Year",
            y = "Place") +
       theme_minimal() +
       theme(legend.position = "none",
