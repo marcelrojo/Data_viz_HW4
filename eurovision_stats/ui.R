@@ -9,9 +9,10 @@ library(ggiraph)
 library(shinydashboard)
 library(highcharter)
 
-data_to_use<-read.csv("datasets/eurovision_results.csv")
-Countries_list<-sort(unique(data_to_use$Country))
-Years_list<-data_to_use$Year
+data_UI<-read.csv("datasets/eurovision_results.csv")
+Countries_list<-sort(unique(data_UI$Country))
+Years_list<-data_UI$Year
+Places_list<-sort(as.numeric(unique(data_UI$Grand.Final.Place)))
 
 dashboardPage(
   dashboardHeader(
@@ -94,13 +95,17 @@ dashboardPage(
       )),
       fluidRow(splitLayout(
         box(
-          selectInput("countries", "Select up to 5 countries:", choices = unique(Countries_list),
+          selectInput("countries", "Select Countries:", choices = unique(Countries_list),
                       selected="Poland", multiple = TRUE),
           sliderInput("years", "Select Year Range:", min = min(Years_list),
                       max = max(Years_list),
                       value = c(min(Years_list), 
                                 max(Years_list)), step = 1, sep = ""),
-          height = 200
+          sliderInput("places", "Select Placement Range:", min = min(Places_list),
+                      max = max(Places_list),
+                      value = c(min(Places_list), 
+                                max(Places_list)), step = 1, sep = ""),
+          height = 300
         ),
         box(title = "Change of Placements Over Time",
             width = 12,
