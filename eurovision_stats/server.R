@@ -1,3 +1,8 @@
+.libPaths(c("external_libs", .libPaths()))
+library(ggflags)
+#Dependecies issue fix
+library(grImport2)
+
 library(shiny)
 library(sf)
 library(rnaturalearth)
@@ -9,10 +14,8 @@ library(ggplot2)
 library(packcircles)
 library(tidyverse)
 library(highcharter)
-#devtools::install_github("ellisp/ggflags")
-library(ggflags)
 library(countrycode)
-
+library(rsconnect)
 
 
 function(input, output, session) {
