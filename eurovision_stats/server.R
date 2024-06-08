@@ -1,4 +1,5 @@
 .libPaths(c("external_libs", .libPaths()))
+library(reactable)
 library(ggflags)
 #Dependecies issue fix
 library(grImport2)
@@ -14,7 +15,7 @@ library(tidyverse)
 library(highcharter)
 library(countrycode)
 library(rsconnect)
-library(reactable)
+
 
 
 results <- read.csv("datasets/eurovision_results.csv")

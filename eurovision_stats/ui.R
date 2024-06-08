@@ -1,5 +1,6 @@
 library(shiny)
 library(shinyWidgets)
+library(reactable)
 library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
@@ -83,7 +84,7 @@ dashboardPage(
         box(sliderInput("years_end", "Select the Endpoint of Data:", 
                     min = min(Years_list),
                     max = max(Years_list),
-                    value = min(Years_list), 
+                    value = max(Years_list), 
                     step = 1,
                     #animate=TRUE,
                     sep = ""),
