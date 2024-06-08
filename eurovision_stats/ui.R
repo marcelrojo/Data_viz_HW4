@@ -173,7 +173,7 @@ dashboardPage(
           div("STATISTICS", style = "color: white; font-size: 30px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
         )
       )),
-      fluidRow(column(width = 6,
+      fluidRow(column(width = 4,
                       box(
                         checkboxGroupInput(
                           "continent",
@@ -186,10 +186,11 @@ dashboardPage(
                           ),
                           selected = c("europe", "asia", "africa", "oceania")
                         ),
+                        width = "100%",
                       )),
-               column(width=6,
+               column(width=8,
                       box(title = "Countries Participation Datatable",
-                          width = 15,
+                          width = "100%",
                           reactableOutput("countries_table")
                       )))
     ),
