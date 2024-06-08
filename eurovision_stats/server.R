@@ -12,158 +12,181 @@ library(highcharter)
 #devtools::install_github("ellisp/ggflags")
 library(ggflags)
 library(countrycode)
+library(reactable)
+results = read.csv("datasets/eurovision_results.csv")
+events = read.csv("datasets/events_info.csv")
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+hosting <- events %>%
+  group_by(Country) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+world['events'] <- hosting$n[match(world$name, hosting$Country)]
+data.frame(world$name, world$events)
+
+world$events[is.na(world$events)] <- 0
+world$events <- as.factor(world$events)
+Europe <- world[which(world$continent == "Europe"),]
+
+custom_colors = rev(
+  c(
+    "#6B10C5",
+    "#d9009b",
+    "#ff1e6e",
+    "#FF7814",
+    "#ffa65b",
+    "#ffd254",
+    "#f9f871",
+    "lightgrey"
+  )
+)
+europe_map <- ggplot(world) +
+  geom_sf_interactive(aes(
+    fill = events,
+    tooltip = paste('Country: ', name, '\n',
+                    'Number of events hosted: ', events)
+    ),
+  color = 'white',
+  size = 0.6) +
+  theme_void() +
+  scale_fill_manual(values = custom_colors) +
+  coord_sf(xlim = c(-25, 50),
+           ylim = c(35, 70),
+           expand = FALSE) +
+  labs(fill = "Number of events") +
+  theme(
+    legend.position = "none",
+    panel.background = element_rect(fill = "#010039"),
+    plot.background = element_rect(fill = "#010039"),
+    plot.title = element_text(
+      color = "white",
+      size = 20,
+      hjust = 0.5
+    ),
+    plot.margin = unit(c(0, 0, 0, 0), 'cm')
+  )
+map_viz <- girafe(ggobj = europe_map,
+       width_svg = 2*8.9,
+       height_svg = 2*6.8436,
+       options = list(opts_sizing(rescale = T)))
 
 
+
+
+
+
+data_placements <- results[!is.na(results$Grand.Final.Place),]
+data_placements$Year <- as.numeric(data_placements$Year)
+data_placements$Grand.Final.Place <- as.numeric(data_placements$Grand.Final.Place)
+data_placements$Country <- factor(data_placements$Country)
+data_placements$Code <- tolower(countrycode(data_placements$Country, "country.name", "iso2c"))
+
+custom_colors_placements <- c("#fff800","#ff0188","#0043fe","#aed258","#ff7815", 
+                              "#9b59b6","#3498db","#e74c3c","#2ecc71","#f39c12")
 
 function(input, output, session) {
+  
+  results = read.csv("datasets/eurovision_results.csv")
+  events = read.csv("datasets/events_info.csv")
+  
 # ------------------------------------------------------------------------------------------------------------
   output$contests <- renderValueBox({
-    events <- read.csv("datasets/events_info.csv")
     valueBox(
       color = "fuchsia",
       value = paste(nrow(events), 'CONTESTS'),
       subtitle = "ESC has been held annualy for almost 70 years!"
       )
-  })  
+  })
+  
+# ------------------------------------------------------------------------------------------------------------
+  
 
 # ------------------------------------------------------------------------------------------------------------
   output$map <- renderGirafe({
-    results = read.csv("datasets/eurovision_results.csv")
-    events = read.csv("datasets/events_info.csv")
-    world <- ne_countries(scale = "medium", returnclass = "sf")
-    hosting <- events %>%
-      group_by(Country) %>%
-      summarise(n = n()) %>%
-      arrange(desc(n))
-    
-    world['events'] <- hosting$n[match(world$name, hosting$Country)]
-    data.frame(world$name, world$events)
-    
-    world$events[is.na(world$events)] <- 0
-    world$events <- as.factor(world$events)
-    
-    Europe <- world[which(world$continent == "Europe"),]
-    custom_colors = rev(
-      c(
-        "#6B10C5",
-        "#d9009b",
-        "#ff1e6e",
-        "#FF7814",
-        "#ffa65b",
-        "#ffd254",
-        "#f9f871",
-        "lightgrey"
-      )
-    )
-    p <- ggplot(world) +
-      geom_sf_interactive(aes(
-        fill = events,
-        tooltip = paste('Country: ', name, '\n',
-                        'Number of events hosted: ', events)
-      ),
-      color = 'white',
-      size = 0.6) +
-      theme_void() +
-      scale_fill_manual(values = custom_colors) +
-      coord_sf(xlim = c(-25, 50),
-               ylim = c(35, 70),
-               expand = FALSE) +
-      labs(fill = "Number of events") +
-      theme(
-        legend.position = "none",
-        panel.background = element_rect(fill = "#010039"),
-        plot.background = element_rect(fill = "#010039"),
-        plot.title = element_text(
-          color = "white",
-          size = 20,
-          hjust = 0.5
-        ),
-        plot.margin = unit(c(0, 0, 0, 0), 'cm')
-      )
-    girafe(ggobj = p,
-           width_svg = 2*8.9,
-           height_svg = 2*6.8436,
-           options = list(opts_sizing(rescale = T)))
+    map_viz
   })
+  
+#  print(input$map_selected)
 
 # ------------------------------------------------------------------------------------------------------------
   # the language visualization
-  output$circles <- renderGirafe({
-    results = read.csv("datasets/eurovision_results.csv")
-    # prepare datafreame
-    country_lang = data.frame(country = results$Country, lang = results$Language)
-    country_lang$lang = gsub(" ", "", country_lang$lang)
-    freq_table = table(unlist(strsplit(country_lang$lang, ",")))
-    prop_table = prop.table(freq_table)
-    lang_freq = data.frame(freq_table)
-    lang_count = data.frame(prop_table)
-    lang_count$Count = lang_freq$Freq
-    colnames(lang_count) = c("Language", "Proportion", "Count")
-    lang_count$Proportion = round(lang_count$Proportion * 100, 2)
-    lang_count = lang_count[lang_count$Proportion > 3.0, ]
-    
-    # prepare the circles
-    packing <-
-      circleProgressiveLayout(lang_count$Proportion, sizetype = 'area')
-    data <- cbind(lang_count, packing)
-    data$text <-
-      paste(
-        "Language: ",
-        data$Language,
-        "\n",
-        "Proportion: ",
-        data$Proportion,
-        "\n",
-        "Proportion of ",
-        data$Language,
-        " eurovision songs is ",
-        data$Proportion,
-        ", that is ",
-        data$Count,
-        " songs."
-      )
-    dat.gg <- circleLayoutVertices(packing, npoints = 50)
-    
-    custom_colors <- c(
-      "#6B10C5",
-      "#aa20ab",
-      "#d9009b",
-      "#ff1e6e",
-      "#ff5f49",
-      "#FF7814",
-      "#ff9e35",
-      "#ffa65b",
-      "#ffd254",
-      "#f9f871"
+  results = read.csv("datasets/eurovision_results.csv")
+  # prepare datafreame
+  country_lang = data.frame(country = results$Country, lang = results$Language)
+  country_lang$lang = gsub(" ", "", country_lang$lang)
+  freq_table = table(unlist(strsplit(country_lang$lang, ",")))
+  prop_table = prop.table(freq_table)
+  lang_freq = data.frame(freq_table)
+  lang_count = data.frame(prop_table)
+  lang_count$Count = lang_freq$Freq
+  colnames(lang_count) = c("Language", "Proportion", "Count")
+  lang_count$Proportion = round(lang_count$Proportion * 100, 2)
+  lang_count = lang_count[lang_count$Proportion > 3.0, ]
+  
+  # prepare the circles
+  packing <- circleProgressiveLayout(lang_count$Proportion, sizetype = 'area')
+  data <- cbind(lang_count, packing)
+  data$text <-
+    paste(
+      "Language: ",
+      data$Language,
+      "\n",
+      "Proportion: ",
+      data$Proportion,
+      "\n",
+      "Proportion of ",
+      data$Language,
+      " eurovision songs is ",
+      data$Proportion,
+      ", that is ",
+      data$Count,
+      " songs."
     )
-    dat.gg$id <- as.factor(dat.gg$id)
-    p <- ggplot() +
-      geom_polygon_interactive(data = dat.gg, aes(
-        x,
-        y,
-        group = id,
-        fill = id,
-        tooltip = data$text[id]
-      )) +
-      geom_text(
-        data = data,
-        aes(x, y, size = Proportion, label = Language),
-        color = "white"
-        ) +
-      scale_fill_manual(values = custom_colors) +
-      scale_size_continuous(range = c(3, 7)) +
-      theme_void() +
-      coord_equal() +
-      theme(
-        legend.position = "none",
-        panel.background = element_rect(fill = "#010039"),
-        plot.background = element_rect(fill = "#010039"),
-        plot.margin = unit(c(0, 0, 0, 0), 'cm')
-      )
-    
-    widg <- girafe(ggobj = p,
-                   width_svg = 0.7*5.81, height_svg = 0.7*4,
-                   options = list(opts_sizing(rescale = F)))
+  dat.gg <- circleLayoutVertices(packing, npoints = 50)
+  
+  custom_colors <- c(
+    "#6B10C5",
+    "#aa20ab",
+    "#d9009b",
+    "#ff1e6e",
+    "#ff5f49",
+    "#FF7814",
+    "#ff9e35",
+    "#ffa65b",
+    "#ffd254",
+    "#f9f871"
+  )
+  dat.gg$id <- as.factor(dat.gg$id)
+  circle_lang <- ggplot() +
+    geom_polygon_interactive(data = dat.gg, aes(
+      x,
+      y,
+      group = id,
+      fill = id,
+      tooltip = data$text[id]
+    )) +
+    geom_text(
+      data = data,
+      aes(x, y, size = Proportion, label = Language),
+      color = "white"
+    ) +
+    scale_fill_manual(values = custom_colors) +
+    scale_size_continuous(range = c(3, 7)) +
+    theme_void() +
+    coord_equal() +
+    theme(
+      legend.position = "none",
+      panel.background = element_rect(fill = "#010039"),
+      plot.background = element_rect(fill = "#010039"),
+      plot.margin = unit(c(0, 0, 0, 0), 'cm')
+    )
+  output$circles <- renderGirafe({
+    girafe(
+      ggobj = circle_lang,
+      width_svg = 0.7 * 5.81,
+      height_svg = 0.7 * 4,
+      options = list(opts_sizing(rescale = F))
+    )
   })
   
 # ------------------------------------------------------------------------------------------------------------
@@ -299,38 +322,32 @@ function(input, output, session) {
 
 
 #------------------------------------------------------------------------------------------------
+  placements <- reactive({
+    selected_data <- subset(data_placements, Country %in% input$countries 
+                            & Year >= input$years[1] & Year <= input$years[2]
+                            & Grand.Final.Place >= input$places[1] & Grand.Final.Place <= input$places[2])  
+    selected_data
+  })
+  
   output$placements_plot <- renderGirafe({
-    data <- read.csv("datasets/eurovision_results.csv")
+    repeated_colors=rep(custom_colors_placements, 6)
+    selected_data <- placements()
+    selected_data$Grand.Final.Place <- as.numeric(selected_data$Grand.Final.Place)
+    selected_data <- selected_data[!is.na(selected_data$Grand.Final.Place),]
+    selected_data<-selected_data[!is.infinite(selected_data$Grand.Final.Place)]
     
-    # Convert necessary columns
-    data_placements <- data[!is.na(data$Grand.Final.Place), ]
-    data_placements$Year <- as.numeric(data_placements$Year)
-    data_placements$Grand.Final.Place <- as.numeric(data_placements$Grand.Final.Place)
-    data_placements$Country <- factor(data_placements$Country)
-    data_placements$Code <- tolower(countrycode(data_placements$Country, "country.name", "iso2c"))
-    
-    custom_colors <- c(
-      "#fff800",
-      "#ff0188",
-      "#0043fe",
-      "#aed258",
-      "#ff7815"
-    )
-    
-    selected_data <- subset(data_placements, Country %in% input$countries & Year >= input$years[1] & Year <= input$years[2])
-    
-    # Plot selected data
-    p <- ggplot(selected_data, aes(x = Year, y = Grand.Final.Place, group = Country, color = Country, fill=Country)) +
+    custom_colors <- custom_colors_placements
+    placements_viz <- ggplot(selected_data, aes(x = Year, y = Grand.Final.Place, group = Country, color = Country, fill=Country)) +
       geom_line(size = 1.5) +
       geom_point_interactive(aes(tooltip=paste0("Country: ", Country, "<br>",
                                                 "Year: ", Year, "<br>",
                                                 "Place: ", Grand.Final.Place, "<br>",
-                                                "\"", Song, "\" by ", Artist)), size = 9.5, alpha=1) + # Plot all places as small circles
+                                                "\"", Song, "\" by ", Artist)), size = 9.5, alpha=1) +
       geom_flag(aes(country = Code, color = Country), size = 8) +      
       scale_shape_manual(name = "", values = 16) + # Change shape to a circle
-      scale_fill_manual(values = custom_colors) +
-      scale_color_manual(values = custom_colors) +
-      scale_y_reverse(name = "Place", breaks = seq(1, max(selected_data$Grand.Final.Place, na.rm = TRUE), 1)) +
+      scale_fill_manual(values = repeated_colors) +
+      scale_color_manual(values = repeated_colors) +
+      scale_y_reverse(name = "Place", breaks = seq(1, max(selected_data$Grand.Final.Place), 1)) +
       labs(x = "Year",
            y = "Place") +
       theme_minimal() +
@@ -342,8 +359,57 @@ function(input, output, session) {
             panel.grid.minor.y = element_blank(),
             panel.grid.minor.x = element_blank())
     
-    widg <- girafe(ggobj = p, width_svg = 10, height_svg = 10)
-    widg
-    
+    widg <- girafe(ggobj = placements_viz, width_svg = 10, height_svg = 10)
+    widg 
   })
+  
+  
+# -----------------------------------------------------------------------------------------------------------------------
+  
+  output$countries_table <- renderReactable({
+    # data frame: country, first attended eurovision, last attended eurovision
+    df_country_first_last = data.frame(Country = unique(results$Country))
+    
+    # first attended eurovision year
+    min_years <- results %>%
+      group_by(Country) %>%
+      summarise(first_attended = min(Year, na.rm = TRUE)) 
+    
+    #last attended eurovision year
+    max_years <- results %>%
+      group_by(Country) %>%
+      summarise(last_attended = max(Year, na.rm = TRUE)) 
+    
+    # how many times a country has attended eurovision
+    times_attended <- results %>%
+      group_by(Country) %>%
+      summarise(times_attended = n())
+    
+    # nr of times being in the top 5
+    freq_top_5 <- results %>%
+      filter(suppressWarnings(as.integer(Grand.Final.Place)) <= 5) %>%
+      group_by(Country) %>%
+      summarise(freq_top_5 = n())
+    
+    # best scored place
+    best_scored_place <- results %>%
+      group_by(Country) %>% 
+      summarise(best_scored_place = min(suppressWarnings(as.integer(Grand.Final.Place)), na.rm = TRUE))
+    
+    df_country_first_last <- df_country_first_last %>%
+      left_join(min_years, by = "Country") %>%
+      left_join(max_years, by = "Country") %>%
+      left_join(times_attended, by = "Country") %>%
+      left_join(freq_top_5, by = "Country") %>%
+      left_join(best_scored_place, by = "Country") %>%
+      mutate(freq_top_5 = ifelse(is.na(freq_top_5), 0, freq_top_5),
+             best_scored_place = ifelse(is.infinite(best_scored_place), "N/A", best_scored_place))
+    
+    
+    names(df_country_first_last) = c("Country", "First Eurovision", "Last Eurovision", 
+                                     "Times Attended", "Top 5 Placements", "Best Place Scored")
+    reactable(
+      df_country_first_last)
+  })
+  
 }

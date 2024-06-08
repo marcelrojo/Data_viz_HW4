@@ -8,10 +8,16 @@ library(plotly)
 library(ggiraph)
 library(shinydashboard)
 library(highcharter)
+library(reactable)
 
-data_to_use<-read.csv("datasets/eurovision_results.csv")
-Countries_list<-sort(unique(data_to_use$Country))
-Years_list<-data_to_use$Year
+
+data_UI<-read.csv("datasets/eurovision_results.csv")
+Countries_list<-sort(unique(data_UI$Country))
+Years_list<-data_UI$Year
+Places_list<-sort(suppressWarnings(as.numeric(unique(data_UI$Grand.Final.Place))))
+# delete not numeric values and inf and null
+Places_list<-Places_list[!is.infinite(Places_list)]
+Places_list<-Places_list[!is.na(Places_list)]
 
 dashboardPage(
   dashboardHeader(
@@ -25,7 +31,8 @@ dashboardPage(
     includeCSS("www/style.css"),
     menuItem("Main page", tabName = "main"),
     menuItem("Other page", tabName = "other"),
-    menuItem("Country Placements", tabName = "placements")
+    menuItem("Country Placements", tabName = "placements"),
+    menuItem("Table", tabName = "table")
     # maybe some other pages
   ),
   dashboardBody(tabItems(
@@ -51,7 +58,7 @@ dashboardPage(
           title = "Winners And Their Songs",
           width = 12,
           highchartOutput("winners")
-        ),
+        )
       )),
       fluidRow(splitLayout(valueBoxOutput("contests")))
     ),
@@ -94,20 +101,34 @@ dashboardPage(
       )),
       fluidRow(splitLayout(
         box(
-          selectInput("countries", "Select up to 5 countries:", choices = unique(Countries_list),
+          selectInput("countries", "Select Countries:", choices = unique(Countries_list),
                       selected="Poland", multiple = TRUE),
-          sliderInput("years", "Select Year Range:", min = min(Years_list),
-                      max = max(Years_list),
-                      value = c(min(Years_list), 
-                                max(Years_list)), step = 1, sep = ""),
-          height = 200
+          sliderInput("places", "Select Placement Range:", min = min(Places_list),
+                      max = max(Places_list),
+                      value = c(min(Places_list), 
+                                max(Places_list)), step = 1, sep = ""),
+          height = 300
         ),
         box(title = "Change of Placements Over Time",
             width = 12,
             girafeOutput("placements_plot"))
       ))
+    ),
+    tabItem(
+      tabName = "table",
+      includeCSS("www/style.css"),
+      fluidRow(column(
+        width = 10,
+        div(
+          style = "display: flex; align-items: baseline; justify-content: left; margin-top: 1px;",
+          div("EUROVISION", style = "color: #FFF400; font-size: 30px; font-weight: 700; font-family: 'Cantarell', sans-serif; margin-right: 10px;"),
+          div("STATISTICS", style = "color: white; font-size: 30px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
+        )
+      )),
+      fluidRow(splitLayout(
+        box(reactableOutput("table"))
+      ))
     )
-    
   ))
 )
   
