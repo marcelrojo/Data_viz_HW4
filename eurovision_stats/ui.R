@@ -45,20 +45,38 @@ dashboardPage(
           div("STATISTICS", style = "color: white; font-size: 30px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
         )
       )),
-      fluidRow(splitLayout(
-        box(title = "The Most Frequent Eurovision Hosts",
-            width = 8.9,
-            girafeOutput("map")),
-        box(title = "The Most Common Language In Eurovision Songs",
-            width = 12,
-            girafeOutput("circles")),
-        box(
-          title = "Winners And Their Songs",
-          width = 12,
-          highchartOutput("winners")
+      fluidRow(
+        column(
+          width=12,
+          tags$img(src = "Eurovision_generic_white.png", height = "100px", style = "display: block; margin: 0 auto; margin-bottom: 10px")
         ),
-      )),
-      fluidRow(splitLayout(valueBoxOutput("contests")))
+        column(
+          width=4,
+          box(
+            title = "The Most Frequent Eurovision Hosts",
+            width = 12,
+            height= 475,
+            girafeOutput("map")
+          )
+        ),
+        column(
+          width=4,
+          box(
+            title = "The Most Frequent Eurovision Song Languages",
+            width = 12,
+            height= 475,
+            girafeOutput("circles")
+          )
+        ),
+        column(
+          width=4,
+          box(
+            title = "Winners And Their Songs",
+            width = 12,
+            height= 475,
+            highchartOutput("winners")
+          )
+      ))
     ),
     tabItem(
       tabName = "most_points",
@@ -88,7 +106,10 @@ dashboardPage(
           
         ),
         column(
-          width = 8,
+          width = 2
+        ),
+        column(
+          width = 6,
           box(title = "Most Points Received",
               width = 12,
               girafeOutput("points"))
@@ -129,7 +150,10 @@ dashboardPage(
             width = 12
           )),
         column(
-          width=8,
+          width = 2
+        ),
+        column(
+          width=6,
           box(title = "Change of Placements Over Time",
               width = 12,
               girafeOutput("placements_plot")
