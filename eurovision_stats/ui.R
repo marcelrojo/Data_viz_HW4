@@ -29,8 +29,8 @@ dashboardPage(
       selected = "main",  
       menuItem("Main Page", tabName = "main"),
       menuItem("Most Points Received", tabName = "most_points"),
-      menuItem("Country Placements", tabName = "placements")
-      # maybe some other pages
+      menuItem("Country Placements", tabName = "placements"),
+      menuItem("Country Participation Details", tabName = "participation")
     )
   ),
   dashboardBody(tabItems(
@@ -160,6 +160,37 @@ dashboardPage(
               )
           
         ))
+    ),
+    tabItem(
+      tabName = "participation",
+      includeCSS("www/style.css"),
+      fluidRow(column(
+        width = 10,
+        div(
+          style = "display: flex; align-items: baseline; justify-content: left; margin-top: 1px;",
+          div("EUROVISION", style = "color: #FFF400; font-size: 30px; font-weight: 700; font-family: 'Cantarell', sans-serif; margin-right: 10px;"),
+          div("STATISTICS", style = "color: white; font-size: 30px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
+        )
+      )),
+      fluidRow(column(width = 4,
+                      box(
+                        checkboxGroupInput(
+                          "continent",
+                          "Select Continents: ",
+                          choices = c(
+                            "Europe" = "europe",
+                            "Asia" = "asia",
+                            "Africa" = "africa",
+                            "Oceania" = "oceania"
+                          ),
+                          selected = c("europe", "asia", "africa", "oceania")
+                        ),
+                      )),
+               column(width=6,
+                      box(title = "Countries Participation Datatable",
+                          width = 12,
+                          reactableOutput("countries_table")
+                      )))
     )
     
   ))
