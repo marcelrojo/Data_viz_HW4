@@ -62,22 +62,43 @@ dashboardPage(
         column(
           width=4,
           box(
+            title = "Winners And Their Songs",
+            width = 12,
+            height= 475,
+            highchartOutput("winners")
+          )
+        ),
+        column(
+          width=4,
+          box(
             title = "The Most Frequent Eurovision Song Languages",
             width = 12,
             height= 475,
             girafeOutput("circles")
           )
         ),
-        column(
-          width=4,
-          box(
-            title = "Winners And Their Songs",
-            width = 12,
-            height= 475,
-            highchartOutput("winners")
-          )
+      column(
+        width=8,
+        box(sliderInput("years_end", "Select the Endpoint of Data:", 
+                    min = min(Years_list),
+                    max = max(Years_list),
+                    value = min(Years_list), 
+                    step = 1,
+                    #animate=TRUE,
+                    sep = ""),
+            width=12)
+      ),
+      column(
+        width=4,
+        box(sliderInput("circles_percentage", "Select Minimum Presence Percentage:", 
+                        min = 0,
+                        max = 40,
+                        value = 3, 
+                        step = 0.1,
+                        pre = "", post = "%"),
+            width=12)
       ))
-    ),
+      ),
     tabItem(
       tabName = "most_points",
       includeCSS("www/style.css"),
