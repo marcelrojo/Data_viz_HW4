@@ -309,33 +309,42 @@ function(input, output, session) {
     }
     # data frame: country, first attended eurovision, last attended eurovision
     df_country_first_last = data.frame(Country = unique(results$Country))
-    df_country_first_last <- df_country_first_last[df_country_first_last$Country %in% countries,]
+    df_country_first_last <- df_country_first_last %>%
+      filter(Country %in% countries)
     # first attended eurovision year
     min_years <- results %>%
+      filter(Country %in% countries) %>%
       group_by(Country) %>%
       summarise(first_attended = min(Year, na.rm = TRUE)) 
-    min_years <- min_years[min_years$Country %in% countries,]
     #last attended eurovision year
     max_years <- results %>%
+      filter(Country %in% countries) %>%
       group_by(Country) %>%
       summarise(last_attended = max(Year, na.rm = TRUE))
-    max_years <- max_years[max_years$Country %in% countries,]
     # how many times a country has attended eurovision
     times_attended <- results %>%
+      filter(Country %in% countries) %>%
       group_by(Country) %>%
       summarise(times_attended = n())
-    times_attended <- times_attended[times_attended$Country %in% countries,]
     # nr of times being in the top 5
     freq_top_5 <- results %>%
+      filter(Country %in% countries) %>%
       filter(suppressWarnings(as.integer(Grand.Final.Place)) <= 5) %>%
       group_by(Country) %>%
       summarise(freq_top_5 = n())
-    freq_top_5 <- freq_top_5[freq_top_5$Country %in% countries,]
     # best scored place
     best_scored_place <- results %>%
+      filter(Country %in% countries) %>%
+      mutate(Grand.Final.Place = ifelse(Grand.Final.Place %in% c("N/A", "DQ", "NQ"), "NULL", Grand.Final.Place))%>%
       group_by(Country) %>% 
-      summarise(best_scored_place = min(suppressWarnings(as.integer(Grand.Final.Place)), na.rm = TRUE))
-    best_scored_place <- best_scored_place[best_scored_place$Country %in% countries,]
+      summarise(best_scored_place = as.integer(min(suppressWarnings(as.integer(Grand.Final.Place)), na.rm = TRUE)))
+
+    print(str(df_country_first_last))
+    print(str(min_years))
+    print(str(max_years))
+    print(str(times_attended))
+    print(str(freq_top_5))
+    print(str(best_scored_place))
     
     df_country_first_last <- df_country_first_last %>%
       left_join(min_years, by = "Country") %>%
@@ -352,8 +361,8 @@ function(input, output, session) {
   
   output$countries_table <- renderReactable({
     countries_table_data <- countries_data()
-    reactable(countries_table_data)
+    reactable(countries_table_data,
+              theme = reactableTheme(backgroundColor = "#010039"))
   })
-  
   
 }
