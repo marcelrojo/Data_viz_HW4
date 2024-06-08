@@ -15,17 +15,6 @@ library(highcharter)
 library(countrycode)
 library(rsconnect)
 
-# library(dplyr)
-# library(tidyr)
-# library(ggplot2)
-# library(rnaturalearth)
-# library(ggiraph)
-# library(packcircles)
-# library(highcharter)
-# library(shiny)
-# library(ggflags)
-# library(countrycode)
-
 
 results <- read.csv("datasets/eurovision_results.csv")
 events <- read.csv("datasets/events_info.csv")
