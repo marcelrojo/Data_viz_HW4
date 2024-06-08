@@ -19,38 +19,6 @@ library(rsconnect)
 results <- read.csv("datasets/eurovision_results.csv")
 events <- read.csv("datasets/events_info.csv")
 
-# EUROPE MAP DATA -------------------------------------------------------------
-europe <- ne_countries(scale = "medium", returnclass = "sf", continent = c("Europe", "Asia"))
-number_of_times_hosting <- events %>%
-  group_by(Country) %>%
-  summarise(n = n())
-europe['events'] <- number_of_times_hosting$n[match(europe$name, number_of_times_hosting$Country)] %>%
-  replace_na(0) %>%
-  as.factor()
-data.frame(europe$name, europe$event)
-custom_colors_map = rev(c("#6B10C5","#d9009b","#ff1e6e","#FF7814","#ffa65b","#ffd254","#f9f871","lightgrey"))
-
-map_viz <-  ggplot(europe) +
-  geom_sf_interactive(aes(fill = events, tooltip = paste("Country: ", name, "\n", 
-                                                         "Number of hosted events: ", events),
-                          onclick = ),
-                      color = "white") +
-  theme_void() +
-  scale_fill_manual(values = custom_colors_map) +
-  coord_sf(xlim = c(-25, 50),
-           ylim = c(35, 70),
-           expand = FALSE) +
-  theme(
-    legend.position = "none",
-    panel.background = element_rect(fill = "#010039"),
-    plot.background = element_rect(fill = "#010039"),
-    plot.margin = unit(c(0, 0, 0, 0), 'cm')
-  )
-# making the graph interactive 
-girafe_map_viz <- girafe(ggobj = map_viz,
-                         width_svg = 2*8.9,
-                         height_svg = 2*6.8436,
-                         options = list(opts_sizing(rescale = T)))
 
 # LANGUAGES CIRCLES DATA -----------------------------------------------------
 df_country_language <- data.frame(country = results$Country, language = gsub(" ", "", results$Language))
@@ -95,36 +63,6 @@ girafe_circles_viz <- girafe(ggobj = circles_viz,
                              options = list(opts_sizing(rescale = T)))  
 #griafe_circles_viz <- girafe_options(girafe_circles_viz, opts_tooltip(css = "font-family: 'Cantarell', sans-serif;"))
 
-# WINNERS HIGHCHART TREE DATA ----------------------------------------------------
-data_finals <- results %>% 
-  filter(Grand.Final.Place == 1) %>% 
-  group_by(Country) %>%
-  summarise(Count = n(),
-            Wins = list(paste(Year, paste0('"', Song, '" by ', Artist), sep = " - "))) %>%
-  arrange(desc(Count))
-# turn the list of winning songs to a single string for each country
-data_finals <- data_finals %>%
-  mutate(Wins = sapply(Wins, paste, collapse = "<br>"))
-
-custom_colors_treemap <- c("#6B10C5","#aa20ab","#d9009b","#ff1e6e"
-                           ,"#ff5f49","#FF7814","#ff9e35")
-# making the treemap
-hc <- data_finals %>% 
-  hchart("treemap", hcaes(x = Country, value = Count, color = Count),
-         tooltip = list(pointFormat = '<b>{point.name}</b><br>
-                                          Count: {point.value}<br>
-                                          Wins:<br>{point.Wins}',
-                        style = list(width = '200px'))) %>%
-  hc_colorAxis(stops = color_stops(colors = rev(custom_colors_treemap))) %>%
-  hc_legend(enabled = FALSE)
-
-custom_theme <- hc_theme(chart = list(backgroundColor = "#010039"),
-                         tooltip = list(backgroundColor = "#000000",
-                                        style = list(color = "#ffffff",
-                                                     fontFamily = "Cantarell",
-                                                     fontSize = "12px")))
-# Apply the custom theme
-hc <- hc %>% hc_add_theme(custom_theme)
 
 # COUNTRIES PLACEMENTS DATA  ---------------------------------------------------------
 data_placements <- results[!is.na(results$Grand.Final.Place),]
@@ -145,16 +83,112 @@ function(input, output, session) {
       color = "fuchsia"
     )
   })
-  # EUROPE MAP -----------------------------------------------------------------
+# EUROPE MAP -----------------------------------------------------------------
+# data filtered based on input from slider
+  selected_data_map <- reactive({
+    europe <- ne_countries(scale = "medium", returnclass = "sf", continent = c("Europe", "Asia"))
+    
+    year <- input$years_end
+    events_filtered <- events %>% 
+      filter(Year <= year)
+    
+    number_of_times_hosting <- events_filtered %>%
+      group_by(Country) %>%
+      summarise(n = n())
+    europe['events'] <- number_of_times_hosting$n[match(europe$name, number_of_times_hosting$Country)] %>%
+      replace_na(0) %>%
+      as.factor()
+    europe
+  })
+  
+  #rendering the plot
   output$map <- renderGirafe({
-    girafe_map_viz
+    
+    custom_colors_map = rev(c("#6B10C5","#d9009b","#ff1e6e","#FF7814","#ffa65b","#ffd254","#f9f871","lightgrey"))
+    data_map <- selected_data_map()
+    map_viz <-  ggplot(data_map) +
+      geom_sf_interactive(aes(fill = events, tooltip = paste("Country: ", name, "\n", 
+                                                             "Number of hosted events: ", events),
+                              onclick = ),
+                          color = "white") +
+      theme_void() +
+      scale_fill_manual(values = custom_colors_map) +
+      coord_sf(xlim = c(-25, 50),
+               ylim = c(35, 70),
+               expand = FALSE) +
+      theme(
+        legend.position = "none",
+        panel.background = element_rect(fill = "#010039"),
+        plot.background = element_rect(fill = "#010039"),
+        plot.margin = unit(c(0, 0, 0, 0), 'cm')
+      )
+    # making the graph interactive 
+    girafe_map_viz <- girafe(ggobj = map_viz,
+                             width_svg = 2*8.9,
+                             height_svg = 2*6.8436,
+                             options = list(opts_sizing(rescale = T)))
+    
   })
   # LANGUAGES CIRCLES ----------------------------------------------------------
   output$circles <- renderGirafe({
     girafe_circles_viz
   })
   # WINNERS TREEMAP ------------------------------------------------------------
+  #data filtered based on the slider
+  selected_data_treemap <- reactive({
+    year=input$years_end
+    data_finals <- results %>%
+      filter(Year <= year) %>% 
+      filter(Grand.Final.Place == 1) %>% 
+      group_by(Country) %>%
+      summarise(Count = n(),
+                Wins = list(paste(Year, paste0('"', Song, '" by ', Artist), sep = " - "))) %>%
+      arrange(desc(Count))
+    # turn the list of winning songs to a single string for each country
+    data_finals <- data_finals %>%
+      mutate(Wins = sapply(Wins, paste, collapse = "<br>"))
+    data_finals
+  })
+  #Plot treemap
   output$winners <- renderHighchart({
+    custom_colors_treemap <- c("#6B10C5","#aa20ab","#d9009b","#ff1e6e"
+                               ,"#ff5f49","#FF7814","#ff9e35")
+    # making the treemap
+    data_finals <- selected_data_treemap()
+    hc <- data_finals %>% 
+      hchart("treemap", hcaes(x = Country, value = Count, color = Count),
+             tooltip = list(pointFormat = '<b>{point.name}</b><br>
+                                          Count: {point.value}<br>
+                                          Wins:<br>{point.Wins}',
+                            style = list(width = '200px'))) %>%
+      hc_colorAxis(
+        min = 1,
+        max = 7,
+        stops = color_stops(
+          n = 8,
+          colors = custom_colors_treemap
+        ),
+        dataClasses = list(
+          list(from = 1, to = 1, color = "#ff9e35"),
+          list(from = 2, to = 2, color = "#FF7814"),
+          list(from = 3, to = 3, color = "#ff5f49"),
+          list(from = 4, to = 4, color = "#ff1e6e"),
+          list(from = 5, to = 5, color = "#d9009b"),
+          list(from = 6, to = 6, color = "#6B10C5"),
+          list(from = 7, to = 7, color = "#aa20ab"),
+          list(from = 8, color = "#6B10C5")
+        )
+      ) %>%
+      hc_legend(enabled = FALSE)%>%
+      hc_plotOptions(treemap = list(animation = FALSE))
+    
+    custom_theme <- hc_theme(chart = list(backgroundColor = "#010039"),
+                             tooltip = list(backgroundColor = "#000000",
+                                            style = list(color = "#ffffff",
+                                                         fontFamily = "Cantarell",
+                                                         fontSize = "12px")))
+    # Apply the custom theme
+    hc <- hc %>% hc_add_theme(custom_theme)
     hc
   })
   # POINTS SELECTOR ------------------------------------------------------------
