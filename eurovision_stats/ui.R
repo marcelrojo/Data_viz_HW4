@@ -114,7 +114,7 @@ dashboardPage(
       )),
       fluidRow(
         column(
-          width = 4,
+          width = 5,
           box(selectInput(
             "select",
             "Select a time-period:",
@@ -129,10 +129,7 @@ dashboardPage(
           
         ),
         column(
-          width = 2
-        ),
-        column(
-          width = 6,
+          width = 7,
           box(title = "Most Points Received",
               width = 12,
               girafeOutput("points"))
@@ -152,7 +149,7 @@ dashboardPage(
       )),
       fluidRow(
         column(
-          width = 4,
+          width = 5,
           box(
             selectInput("countries", "Select Countries:", choices = unique(Countries_list),
                         selected="Poland", multiple = TRUE),
@@ -173,10 +170,7 @@ dashboardPage(
             width = 12
           )),
         column(
-          width = 2
-        ),
-        column(
-          width=6,
+          width=7,
           box(title = "Change of Placements Over Time",
               width = 12,
               girafeOutput("placements_plot")
