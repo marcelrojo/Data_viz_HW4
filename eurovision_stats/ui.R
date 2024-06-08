@@ -25,8 +25,8 @@ dashboardPage(
   dashboardSidebar(
     includeCSS("www/style.css"),
     sidebarMenu(
-      id = "tabs",  # Add an ID for the tab menu
-      selected = "main",  # Set the default selected tab
+      id = "tabs",  
+      selected = "main",  
       menuItem("Main Page", tabName = "main"),
       menuItem("Most Points Received", tabName = "most_points"),
       menuItem("Country Placements", tabName = "placements")
