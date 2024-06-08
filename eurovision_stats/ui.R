@@ -24,10 +24,14 @@ dashboardPage(
   ),
   dashboardSidebar(
     includeCSS("www/style.css"),
-    menuItem("Main Page", tabName = "main"),
-    menuItem("Most Points Received", tabName = "most_points"),
-    menuItem("Country Placements", tabName = "placements")
-    # maybe some other pages
+    sidebarMenu(
+      id = "tabs",  
+      selected = "main",  
+      menuItem("Main Page", tabName = "main"),
+      menuItem("Most Points Received", tabName = "most_points"),
+      menuItem("Country Placements", tabName = "placements")
+      # maybe some other pages
+    )
   ),
   dashboardBody(tabItems(
     tabItem(
@@ -69,20 +73,22 @@ dashboardPage(
       )),
       fluidRow(
         column(
-          width = 12,
+          width = 4,
           box(selectInput(
             "select",
             "Select a time-period:",
             choices = list("1975 - 2003", "2004 - 2015", "2016 - 2024"),
             selected = c(1975, 2003)
           ),
-          height = 180),
+          height = 180,
+          width= 70),
           box(title = "Voting Format Description",
-            textOutput("description"))
+            textOutput("description"),
+            width=70)
           
         ),
         column(
-          width = 12,
+          width = 8,
           box(title = "Most Points Received",
               width = 12,
               girafeOutput("points"))
@@ -100,29 +106,36 @@ dashboardPage(
           div("STATISTICS", style = "color: white; font-size: 30px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
         )
       )),
-      fluidRow(splitLayout(
-        box(
-          selectInput("countries", "Select Countries:", choices = unique(Countries_list),
-                      selected="Poland", multiple = TRUE),
-          sliderInput("years", "Select Year Range:", 
-                      min = min(Years_list),
-                      max = max(Years_list),
-                      value = c(min(Years_list), 
-                                max(Years_list)), 
-                      step = 1, 
-                      sep = ""),
-          sliderInput("places", "Select Placement Range:", 
-                      min = min(Places_list),
-                      max = max(Places_list),
-                      value = c(min(Places_list), 
-                                max(Places_list)), 
-                      step = 1, sep = ""),
-          height = 300
-        ),
-        box(title = "Change of Placements Over Time",
-            width = 12,
-            girafeOutput("placements_plot"))
-      ))
+      fluidRow(
+        column(
+          width = 4,
+          box(
+            selectInput("countries", "Select Countries:", choices = unique(Countries_list),
+                        selected="Poland", multiple = TRUE),
+            sliderInput("years", "Select Year Range:", 
+                        min = min(Years_list),
+                        max = max(Years_list),
+                        value = c(min(Years_list), 
+                                  max(Years_list)), 
+                        step = 1, 
+                        sep = ""),
+            sliderInput("places", "Select Placement Range:", 
+                        min = min(Places_list),
+                        max = max(Places_list),
+                        value = c(min(Places_list), 
+                                  max(Places_list)), 
+                        step = 1, sep = ""),
+            height = 300,
+            width = 12
+          )),
+        column(
+          width=8,
+          box(title = "Change of Placements Over Time",
+              width = 12,
+              girafeOutput("placements_plot")
+              )
+          
+        ))
     )
     
   ))
