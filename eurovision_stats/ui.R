@@ -29,8 +29,9 @@ dashboardPage(
       selected = "main",  
       menuItem("Main Page", tabName = "main"),
       menuItem("Most Points Received", tabName = "most_points"),
-      menuItem("Country Placements", tabName = "placements")
-      # maybe some other pages
+      menuItem("Country Placements", tabName = "placements"),
+      menuItem("Country Participation Details", tabName = "participation"),
+      menuItem("About", tabName = "about")
     )
   ),
   dashboardBody(tabItems(
@@ -181,6 +182,71 @@ dashboardPage(
               )
           
         ))
+    ),
+    tabItem(
+      tabName = "participation",
+      includeCSS("www/style.css"),
+      fluidRow(column(
+        width = 10,
+        div(
+          style = "display: flex; align-items: baseline; justify-content: left; margin-top: 1px;",
+          div("EUROVISION", style = "color: #FFF400; font-size: 30px; font-weight: 700; font-family: 'Cantarell', sans-serif; margin-right: 10px;"),
+          div("STATISTICS", style = "color: white; font-size: 30px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
+        )
+      )),
+      fluidRow(column(width = 4,
+                      box(
+                        checkboxGroupInput(
+                          "continent",
+                          "Select Continents: ",
+                          choices = c(
+                            "Europe" = "europe",
+                            "Asia" = "asia",
+                            "Africa" = "africa",
+                            "Oceania" = "oceania"
+                          ),
+                          selected = c("europe", "asia", "africa", "oceania")
+                        ),
+                        width = "100%",
+                      )),
+               column(width=8,
+                      box(title = "Countries Participation Datatable",
+                          width = "100%",
+                          reactableOutput("countries_table")
+                      )))
+    ),
+    tabItem(
+      tabName = "about",
+      includeCSS("www/style.css"),
+      fluidRow(column(
+        width = 10,
+        div(
+          style = "display: flex; align-items: baseline; justify-content: left; margin-top: 1px;",
+          div("EUROVISION", style = "color: #FFF400; font-size: 30px; font-weight: 700; font-family: 'Cantarell', sans-serif; margin-right: 10px;"),
+          div("STATISTICS", style = "color: white; font-size: 30px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
+        )
+      )),
+      fluidRow(
+        column(10, align = "center",
+               h3("Welcome to EuroViz'on - Eurovision Statistics Visualization Dashboard!"),
+               p("This interactive dashboard visualizes some of the most intriguing statistics from past Eurovision Song Contests. If you're an Eurovision fan or simply love data and graphs, you've found the right place! The name EuroViz'on is a play on the words Eurovision and Visualization (Viz) – the two things we love the most! The dashboard's theme is inspired by the vibrant and colorful theming of the ESC.", style = "text-align:justify;"),
+               h4("Main Page"),
+               p("On the main page, you'll find visualizations that depict general information, including the most frequent Eurovision host, the most used language in Eurovision songs, the most often winning country, and their winning songs. Don't hesitate to hover your mouse pointer over the visualizations to see more detailed information!", style = "text-align:justify;"),
+               h4("Most Points Received"),
+               p("There, you will find the top ten highest-scoring songs from different time periods. We categorized songs this way due to the varying number of participants and point-awarding systems used each year, aiming to make them as comparable as possible. For years before 1975, such analysis is not applicable due to the voting system, or lack thereof, used before then. Once again, don't hesitate to hover and see more!", style = "text-align:justify;"),
+               h4("Country Placements"),
+               p("On this page, you'll see a plot showcasing how a country's placement changes over the years. Choose the countries you want to analyze and compare, select a year range, and the placement range that interests you. Hover over the country flag on the plot to find out which song and artist achieved that placement for their country.", style = "text-align:justify;"),
+               h4("Country Participation Details"),
+               p("There, you'll find an efficient way to see interesting facts about each country's participation, from the year they joined the contest to their best song in Eurovision (based on placement and points in case of ties). Select the continent you're interested in.", style = "text-align:justify;"),
+               h4("We hope you enjoy!"),
+               p("Julia and Marcel", style = "text-align:center; font-weight:bold;"),
+               h5("Sources of our data:", style = "text-align:left;"),
+               p(tags$a(href = "https://eschome.net/", "https://eschome.net/"), style = "text-align:left;"),
+               p(tags$a(href = "https://escincontext.com/resources/data/", "https://escincontext.com/resources/data/"), style = "text-align:left;"),
+               p(tags$a(href = "https://docs.google.com/spreadsheets/d/1UUXinsHP4iDUwprM_KKEng4DBK2uC7Y1NdbnD1lmkSU/edit#gid=0", "https://docs.google.com/spreadsheets/d/1UUXinsHP4iDUwprM_KKEng4DBK2uC7Y1NdbnD1lmkSU/edit#gid=0"), style = "text-align:left;"),
+               p("*some of the data was added by us manually (2024 contest results)", style = "text-align:left;")
+        )
+      )
     )
     
   ))

@@ -14,6 +14,7 @@ library(tidyverse)
 library(highcharter)
 library(countrycode)
 library(rsconnect)
+library(reactable)
 
 
 results <- read.csv("datasets/eurovision_results.csv")
@@ -306,6 +307,96 @@ function(input, output, session) {
             panel.grid.minor.x = element_blank())
     
     widg <- girafe(ggobj = p, width_svg = 10, height_svg = 10)
+  })
+  # COUNTRIES PARTICIPATION DETAILES DATATABLE
+  countries_data <- reactive({
+    europe <- c(
+      "Belgium", "France", "Germany", "Italy", "Luxembourg", "Netherlands", "Switzerland", 
+      "Austria", "Denmark", "United Kingdom", "Sweden", "Monaco", "Norway", "Finland", 
+      "Spain", "Yugoslavia", "Portugal", "Ireland", "Malta", "Greece", "Cyprus", "Iceland", 
+      "Bosnia and Herzegovina", "Croatia", "Slovenia", "Estonia", "Hungary", "Lithuania", 
+      "Poland", "Romania", "Russia", "Slovakia", "North Macedonia", "Latvia", "Ukraine", 
+      "Albania", "Andorra", "Belarus", "Serbia and Montenegro", "Bulgaria", "Moldova", 
+      "Armenia", "Czech Republic", "Georgia", "Montenegro", "Serbia", "San Marino"
+    )
+    asia <- c(
+      "Turkey", "Israel", "Armenia", "Azerbaijan", "Georgia"
+    )
+    africa <- c(
+      "Morocco"
+    )
+    oceania <- c(
+      "Australia"
+    )
+    countries <- c()
+    if ("europe" %in% input$continent) {
+      countries <- c(countries, europe)
+    }
+    if ("asia" %in% input$continent) {
+      countries <- c(countries, asia)
+    }
+    if ("africa" %in% input$continent) {
+      countries <- c(countries, africa)
+    }
+    if ("oceania" %in% input$continent) {
+      countries <- c(countries, oceania)
+    }
+    # data frame: country, first attended eurovision, last attended eurovision
+    df_country_first_last = data.frame(Country = unique(results$Country))
+    df_country_first_last <- df_country_first_last %>%
+      filter(Country %in% countries)
+    # first attended eurovision year
+    min_years <- results %>%
+      filter(Country %in% countries) %>%
+      group_by(Country) %>%
+      summarise(first_attended = min(Year, na.rm = TRUE)) 
+    #last attended eurovision year
+    max_years <- results %>%
+      filter(Country %in% countries) %>%
+      group_by(Country) %>%
+      summarise(last_attended = max(Year, na.rm = TRUE))
+    # how many times a country has attended eurovision
+    times_attended <- results %>%
+      filter(Country %in% countries) %>%
+      group_by(Country) %>%
+      summarise(times_attended = n())
+    # nr of times being in the top 5
+    freq_top_5 <- results %>%
+      filter(Country %in% countries) %>%
+      filter(suppressWarnings(as.integer(Grand.Final.Place)) <= 5) %>%
+      group_by(Country) %>%
+      summarise(freq_top_5 = n())
+    # best scored place
+    best_scored_place <- results %>%
+      filter(Country %in% countries) %>%
+      mutate(Grand.Final.Place = ifelse(Grand.Final.Place %in% c("N/A", "DQ", "NQ"), "NULL", Grand.Final.Place))%>%
+      group_by(Country) %>% 
+      summarise(best_scored_place = as.integer(min(suppressWarnings(as.integer(Grand.Final.Place)), na.rm = TRUE)))
+
+    print(str(df_country_first_last))
+    print(str(min_years))
+    print(str(max_years))
+    print(str(times_attended))
+    print(str(freq_top_5))
+    print(str(best_scored_place))
+    
+    df_country_first_last <- df_country_first_last %>%
+      left_join(min_years, by = "Country") %>%
+      left_join(max_years, by = "Country") %>%
+      left_join(times_attended, by = "Country") %>%
+      left_join(freq_top_5, by = "Country") %>%
+      left_join(best_scored_place, by = "Country") %>%
+      mutate(freq_top_5 = ifelse(is.na(freq_top_5), 0, freq_top_5),
+             best_scored_place = ifelse(is.infinite(best_scored_place), "N/A", best_scored_place))
+    names(df_country_first_last) = c("Country", "First Eurovision", "Last Eurovision", 
+                                     "Times Attended", "Top 5 Placements", "Best Place Scored")
+    df_country_first_last
+  })
+  
+  output$countries_table <- renderReactable({
+    countries_table_data <- countries_data()
+    reactable(countries_table_data,
+              theme = reactableTheme(backgroundColor = "#010039"))
   })
   
 }
