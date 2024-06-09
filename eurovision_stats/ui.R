@@ -79,28 +79,28 @@ dashboardPage(
             girafeOutput("circles")
           )
         ),
-      column(
-        width=8,
-        box(sliderInput("years_end", "Select the Endpoint of Data:", 
-                    min = min(Years_list),
-                    max = max(Years_list),
-                    value = max(Years_list), 
-                    step = 1,
-                    #animate=TRUE,
-                    sep = ""),
-            width=12)
-      ),
-      column(
-        width=4,
-        box(sliderInput("circles_percentage", "Select Minimum Presence Percentage:", 
-                        min = 1,
-                        max = 10,
-                        value = 2.8, 
-                        step = 0.1,
-                        pre = "", post = "%"),
-            width=12)
-      ))
-      ),
+        column(
+          width=8,
+          box(sliderInput("years_end", "Select the Endpoint of Data:", 
+                          min = min(Years_list),
+                          max = max(Years_list),
+                          value = max(Years_list), 
+                          step = 1,
+                          #animate=TRUE,
+                          sep = ""),
+              width=12)
+        ),
+        column(
+          width=4,
+          box(sliderInput("circles_percentage", "Select Minimum Presence Percentage:", 
+                          min = 1,
+                          max = 10,
+                          value = 2.8, 
+                          step = 0.1,
+                          pre = "", post = "%"),
+              width=12)
+        ))
+    ),
     tabItem(
       tabName = "most_points",
       includeCSS("www/style.css"),
@@ -114,7 +114,7 @@ dashboardPage(
       )),
       fluidRow(
         column(
-          width = 5,
+          width = 4,
           box(selectInput(
             "select",
             "Select a time-period:",
@@ -124,12 +124,15 @@ dashboardPage(
           height = 180,
           width= 70),
           box(title = "Voting Format Description",
-            textOutput("description"),
-            width=70)
+              textOutput("description"),
+              width=70)
           
         ),
         column(
-          width = 7,
+          width = 2
+        ),
+        column(
+          width = 6,
           box(title = "Most Points Received",
               width = 12,
               girafeOutput("points"))
@@ -149,7 +152,7 @@ dashboardPage(
       )),
       fluidRow(
         column(
-          width = 5,
+          width = 4,
           box(
             selectInput("countries", "Select Countries:", choices = unique(Countries_list),
                         selected="Poland", multiple = TRUE),
@@ -170,11 +173,14 @@ dashboardPage(
             width = 12
           )),
         column(
-          width=7,
+          width = 2
+        ),
+        column(
+          width=6,
           box(title = "Change of Placements Over Time",
               width = 12,
               girafeOutput("placements_plot")
-              )
+          )
           
         ))
     ),
