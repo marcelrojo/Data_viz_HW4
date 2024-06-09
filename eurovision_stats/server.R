@@ -408,7 +408,7 @@ function(input, output, session) {
     times_attended <- results %>%
       filter(Country %in% countries) %>%
       group_by(Country) %>%
-      summarise(times_attended = n())
+      summarise(times_attended = n_distinct(Year))
     # nr of times being in the top 5
     freq_top_5 <- results %>%
       filter(Country %in% countries) %>%
@@ -422,12 +422,6 @@ function(input, output, session) {
       group_by(Country) %>% 
       summarise(best_scored_place = as.integer(min(suppressWarnings(as.integer(Grand.Final.Place)), na.rm = TRUE)))
 
-    print(str(df_country_first_last))
-    print(str(min_years))
-    print(str(max_years))
-    print(str(times_attended))
-    print(str(freq_top_5))
-    print(str(best_scored_place))
     
     df_country_first_last <- df_country_first_last %>%
       left_join(min_years, by = "Country") %>%
