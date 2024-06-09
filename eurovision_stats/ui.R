@@ -56,7 +56,7 @@ dashboardPage(
           width=4,
           box(
             title = "The Most Frequent Eurovision Hosts",
-            width = 12,
+            width = "100%",
             height= 475,
             girafeOutput("map")
           )
@@ -65,7 +65,7 @@ dashboardPage(
           width=4,
           box(
             title = "Winners And Their Songs",
-            width = 12,
+            width = "100%",
             height= 475,
             highchartOutput("winners")
           )
@@ -74,7 +74,7 @@ dashboardPage(
           width=4,
           box(
             title = "The Most Frequent Eurovision Song Languages",
-            width = 100,
+            width = "100%",
             height= 475,
             girafeOutput("circles")
           )
@@ -88,17 +88,17 @@ dashboardPage(
                     step = 1,
                     #animate=TRUE,
                     sep = ""),
-            width=12)
+            width="100%")
       ),
       column(
         width=4,
-        box(sliderInput("circles_percentage", "Select Minimum Presence Percentage:", 
+        box(sliderInput("circles_percentage", "Select Minimum Percentage:", 
                         min = 1,
                         max = 10,
                         value = 2.8, 
                         step = 0.1,
                         pre = "", post = "%"),
-            width=12)
+            width="100%")
       ))
       ),
     tabItem(
@@ -129,13 +129,13 @@ dashboardPage(
           
         ),
         column(
-          width = 2
-        ),
-        column(
           width = 6,
           box(title = "Most Points Received",
               width = 12,
               girafeOutput("points"))
+        ),
+        column(
+          width = 2
         )
       )
     ),
@@ -170,18 +170,17 @@ dashboardPage(
                                   max(Places_list)), 
                         step = 1, sep = ""),
             height = 300,
-            width = 12
+            width = "100%"
           )),
-        column(
-          width = 2
-        ),
         column(
           width=6,
           box(title = "Change of Placements Over Time",
-              width = 12,
+              width = "100%",
               girafeOutput("placements_plot")
               )
-          
+        ),
+        column(
+          width = 2
         ))
     ),
     tabItem(

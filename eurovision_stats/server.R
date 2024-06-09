@@ -296,20 +296,20 @@ function(input, output, session) {
                       Consequently, each country assigned points to their top 10 performances as follows:, 
                       1st place: 12 points, 
                       2nd place: 10 points, 
-                      3rd to 10th place: 8 to 1 point respectively"
+                      3rd to 10th place: 8 to 1 point respectively."
     } else if (year1 == "2004") {
       description <- "Between 2004 and 2015, the number of participating countries ranged from 36 to 43. 
                       The points awarded were based either solely on televotes or on a mixed system of jury votes and televotes, such as the 50/50 jury-televote system. 
                       Consequently, each country assigned points to their top 10 performances as follows:
                       1st place: 12 points,
                       2nd place: 10 points, 
-                      3rd to 10th place: 8 to 1 point respectively"
+                      3rd to 10th place: 8 to 1 point respectively."
     } else {
       description <- paste("Between 2016 and 2024, the number of participating countries ranged from 37 to 43. 
                            The points awarded were a combination of jury points and televotes. 
                            Consequently, each country assigned points to their top 10 performances as follows: 
                            1st place: 12 points (from both jury and televote), 2nd place: 10 points (from both jury and televote), 
-                           3rd to 10th place: 8 to 1 point (from both jury and televote) For example, if Poland received 7 points (4th place) 
+                           3rd to 10th place: 8 to 1 point (from both jury and televote). For example, if Poland received 7 points (4th place) 
                            from the Portuguese jury and 10 points (2nd place) from the Portuguese televote, 
                            Poland would be awarded a total of 17 points from Portugal.")
     }
