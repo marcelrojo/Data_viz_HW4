@@ -32,37 +32,37 @@ prop_table$Count <- frequency_table$Freq
 language_count <- prop_table %>%
   rename(Language = Var1, Proportion = Freq)
 language_count$Proportion = round(language_count$Proportion * 100, 2)
-language_count <- language_count[language_count$Proportion > 3.0, ]
-# preparing the circles plot
-packing <- circleProgressiveLayout(language_count$Proportion, sizetype = 'area')
-language_count <- cbind(language_count, packing)
-# the description
-language_count$text <-  paste("Language: ",language_count$Language,"\n",  "Percentage: ", language_count$Proportion, "%\n",
-                              "Percentage of ", language_count$Language," eurovision songs is ",language_count$Proportion,
-                              "%, that is ", language_count$Count," songs.")
-
-# making the plot
-circle_vertices <- circleLayoutVertices(packing, npoints = 50)
-circle_vertices$id <- as.factor(circle_vertices$id)
-custom_colors_circles <- c("#6B10C5","#aa20ab","#d9009b","#ff1e6e","#ff5f49",
-                           "#FF7814","#ff9e35","#ffa65b","#ffd254","#f9f871")
-circles_viz <- ggplot() +
-  geom_polygon_interactive(data = circle_vertices, aes(x, y, group = id,
-                                                       fill = id, tooltip = language_count$text[id])) +
-  geom_text(data = language_count, aes(x, y, size = Proportion, label = Language), color = "white") +
-  scale_fill_manual(values = custom_colors_circles) +
-  scale_size_continuous(range = c(3,7)) +
-  theme_void() +
-  coord_equal() +
-  theme(legend.position = "none",
-        panel.background = element_rect(fill = "#010039"),
-        plot.background = element_rect(fill = "#010039"),
-        plot.margin = unit(c(0, 0, 0, 0), 'cm'))
-
-girafe_circles_viz <- girafe(ggobj = circles_viz,
-                             width_svg = 0.7 * 5.81,
-                             height_svg = 0.7 * 4,
-                             options = list(opts_sizing(rescale = T)))  
+# language_count <- language_count[language_count$Proportion > 3.0, ]
+# # preparing the circles plot
+# packing <- circleProgressiveLayout(language_count$Proportion, sizetype = 'area')
+# language_count <- cbind(language_count, packing)
+# # the description
+# language_count$text <-  paste("Language: ",language_count$Language,"\n",  "Percentage: ", language_count$Proportion, "%\n",
+#                               "Percentage of ", language_count$Language," eurovision songs is ",language_count$Proportion,
+#                               "%, that is ", language_count$Count," songs.")
+# 
+# # making the plot
+# circle_vertices <- circleLayoutVertices(packing, npoints = 50)
+# circle_vertices$id <- as.factor(circle_vertices$id)
+# custom_colors_circles <- c("#6B10C5","#aa20ab","#d9009b","#ff1e6e","#ff5f49",
+#                            "#FF7814","#ff9e35","#ffa65b","#ffd254","#f9f871")
+# circles_viz <- ggplot() +
+#   geom_polygon_interactive(data = circle_vertices, aes(x, y, group = id,
+#                                                        fill = id, tooltip = language_count$text[id])) +
+#   geom_text(data = language_count, aes(x, y, size = Proportion, label = Language), color = "white") +
+#   scale_fill_manual(values = custom_colors_circles) +
+#   scale_size_continuous(range = c(3,7)) +
+#   theme_void() +
+#   coord_equal() +
+#   theme(legend.position = "none",
+#         panel.background = element_rect(fill = "#010039"),
+#         plot.background = element_rect(fill = "#010039"),
+#         plot.margin = unit(c(0, 0, 0, 0), 'cm'))
+# 
+# girafe_circles_viz <- girafe(ggobj = circles_viz,
+#                              width_svg = 0.7 * 5.81,
+#                              height_svg = 0.7 * 4,
+#                              options = list(opts_sizing(rescale = T)))  
 #griafe_circles_viz <- girafe_options(girafe_circles_viz, opts_tooltip(css = "font-family: 'Cantarell', sans-serif;"))
 
 
@@ -132,8 +132,56 @@ function(input, output, session) {
     
   })
   # LANGUAGES CIRCLES ----------------------------------------------------------
-  output$circles <- renderGirafe({
+  circles_data <- reactive({
+    prop = input$circles_percentage
+
+    language_count_react <- language_count[language_count$Proportion > prop, ]
+    # preparing the circles plot
+    
+    
+    packing <- circleProgressiveLayout(language_count_react$Proportion, sizetype = 'area')
+    language_count_react <- cbind(language_count_react, packing)
+    # the description
+    language_count_react$text <-  paste("Language: ",language_count_react$Language,"\n",  "Percentage: ", language_count_react$Proportion, "%\n",
+                                  "Percentage of ", language_count_react$Language," eurovision songs is ",language_count_react$Proportion,
+                                  "%, that is ", language_count_react$Count," songs.")
+    
+    # making the plot
+    #packing <- circleRepelLayout(packing, 5, 10, sizetype="area")
+    
+    circle_vertices <- circleLayoutVertices(packing, npoints = 50)
+    circle_vertices$id <- as.factor(circle_vertices$id)
+    
+    
+    
+    custom_colors_circles <- c("#5300a6","#6B10C5", "#aa00ff","#a010c5","#aa20ab", "#d9009b", 
+                              "#ff1e70","#ff1e6e","#ff5005","#ff5f49","#FF7814",
+                               "#ff9e35", "#ffa65b","#febb00","#ffd254","#fffd00" ,"#f9f871")
+    
+    
+    circles_viz <- ggplot() +
+      geom_polygon_interactive(data = circle_vertices, aes(x, y, group = id,
+                                                           fill = id, tooltip = language_count_react$text[id])) +
+      geom_text(data = language_count_react, aes(x, y, size = Proportion, label = Language), color = "white") +
+      scale_fill_manual(values = custom_colors_circles) +
+      scale_size_continuous(range = c(3,7)) +
+      theme_void() +
+      coord_equal() +
+      theme(legend.position = "none",
+            plot.background = element_rect(fill = "#010039"),
+            plot.margin = unit(c(-1, -1,-1, -1), 'cm'),
+            panel.background = element_rect(fill = "#010039"))
+    
+    
+    
+    girafe_circles_viz <- girafe(ggobj = circles_viz,
+                                 options = list(opts_sizing(rescale = T))
+                                )  
     girafe_circles_viz
+  })
+
+  output$circles <- renderGirafe({
+    circles_data()
   })
   # WINNERS TREEMAP ------------------------------------------------------------
   #data filtered based on the slider

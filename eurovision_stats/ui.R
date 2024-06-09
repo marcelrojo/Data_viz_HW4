@@ -19,8 +19,8 @@ dashboardPage(
   dashboardHeader(
     title = div(
       style = "display: flex; align-items: baseline; justify-content: center; margin-top: 2px;",
-      div("EUROVISION", style = "color: #FFF400; font-size: 14px; font-weight: 700; font-family: 'Cantarell', sans-serif; margin-right: 10px;"),
-      div("STATISTICS", style = "color: white; font-size: 14px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
+      div("Euro", style = "color: #FFF400; font-size: 18px; font-weight: 700; font-family: 'Cantarell', sans-serif;"),
+      div("Viz'on", style = "color: white; font-size: 18px; font-weight: 400; font-family: 'Cantarell', sans-serif;")
     )
   ),
   dashboardSidebar(
@@ -74,7 +74,7 @@ dashboardPage(
           width=4,
           box(
             title = "The Most Frequent Eurovision Song Languages",
-            width = 12,
+            width = 100,
             height= 475,
             girafeOutput("circles")
           )
@@ -93,9 +93,9 @@ dashboardPage(
       column(
         width=4,
         box(sliderInput("circles_percentage", "Select Minimum Presence Percentage:", 
-                        min = 0,
-                        max = 40,
-                        value = 3, 
+                        min = 1,
+                        max = 10,
+                        value = 2.8, 
                         step = 0.1,
                         pre = "", post = "%"),
             width=12)
@@ -222,7 +222,7 @@ dashboardPage(
         )
       )),
       fluidRow(
-        column(10, align = "center",
+        column(12, align = "center",
                h3("Welcome to EuroViz'on - Eurovision Statistics Visualization Dashboard!"),
                p("This interactive dashboard visualizes some of the most intriguing statistics from past Eurovision Song Contests. If you're an Eurovision fan or simply love data and graphs, you've found the right place! The name EuroViz'on is a play on the words Eurovision and Visualization (Viz) – the two things we love the most! The dashboard's theme is inspired by the vibrant and colorful theming of the ESC.", style = "text-align:justify;"),
                h4("Main Page"),
