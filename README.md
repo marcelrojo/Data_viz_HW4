@@ -23,19 +23,11 @@ The name EuroViz'on is a play on the words Eurovision and Visualization (Viz) â€
 - `eurovision_results.csv` dataset containing all of the participants and their results 1956-2024,
 - `events_info.csv` dataset containing information about all of the ESC events.
  
-<img width="944" alt="main_page" src="https://github.com/marcelrojo/Data_viz_HW4/assets/135894486/d82a56c0-4733-4361-afc0-03c020951194">
-<br />
-<br />
+## Dashboard Screenshots:
 <img width="941" alt="main_page_hover" src="https://github.com/marcelrojo/Data_viz_HW4/assets/135894486/1c207914-e4d7-40c4-8aea-721418cc0570">
 <br />
 <br />
-<img width="866" alt="most_points_received" src="https://github.com/marcelrojo/Data_viz_HW4/assets/135894486/85380755-0ae9-4a3c-81a8-04c18b20bd23">
-<br />
-<br />
 <img width="875" alt="points_hover" src="https://github.com/marcelrojo/Data_viz_HW4/assets/135894486/81f948ce-d8ab-475b-b4c6-9a326dedbf17">
-<br />
-<br />
-<img width="893" alt="country_placement" src="https://github.com/marcelrojo/Data_viz_HW4/assets/135894486/9ecd1747-fafd-49b0-8a6f-7d5f216fb596">
 <br />
 <br />
 <img width="864" alt="placement_hover" src="https://github.com/marcelrojo/Data_viz_HW4/assets/135894486/f66d0a9c-d8cd-48c9-9b56-7500421fe267">
