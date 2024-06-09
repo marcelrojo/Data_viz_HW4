@@ -106,7 +106,7 @@ function(input, output, session) {
   #rendering the plot
   output$map <- renderGirafe({
     
-    custom_colors_map = rev(c("#6B10C5","#d9009b","#ff1e6e","#FF7814","#ffa65b","#ffd254","#f9f871","lightgrey"))
+    custom_colors_map = rev(c("#6B10C5","#a010c5", "#d9009b","#ff1e6e","#FF7814","#ffa65b","#ffd254","#f9f871","lightgrey"))
     data_map <- selected_data_map()
     map_viz <-  ggplot(data_map) +
       geom_sf_interactive(aes(fill = events, tooltip = paste("Country: ", name, "\n", 
