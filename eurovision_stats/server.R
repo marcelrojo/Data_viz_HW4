@@ -134,8 +134,11 @@ function(input, output, session) {
   # LANGUAGES CIRCLES ----------------------------------------------------------
   circles_data <- reactive({
     prop = input$circles_percentage
+
     language_count_react <- language_count[language_count$Proportion > prop, ]
     # preparing the circles plot
+    
+    
     packing <- circleProgressiveLayout(language_count_react$Proportion, sizetype = 'area')
     language_count_react <- cbind(language_count_react, packing)
     # the description
@@ -144,11 +147,18 @@ function(input, output, session) {
                                   "%, that is ", language_count_react$Count," songs.")
     
     # making the plot
+    #packing <- circleRepelLayout(packing, 5, 10, sizetype="area")
+    
     circle_vertices <- circleLayoutVertices(packing, npoints = 50)
     circle_vertices$id <- as.factor(circle_vertices$id)
+    
+    
+    
     custom_colors_circles <- c("#5300a6","#6B10C5", "#aa00ff","#a010c5","#aa20ab", "#d9009b", 
                               "#ff1e70","#ff1e6e","#ff5005","#ff5f49","#FF7814",
                                "#ff9e35", "#ffa65b","#febb00","#ffd254","#fffd00" ,"#f9f871")
+    
+    
     circles_viz <- ggplot() +
       geom_polygon_interactive(data = circle_vertices, aes(x, y, group = id,
                                                            fill = id, tooltip = language_count_react$text[id])) +
@@ -159,14 +169,17 @@ function(input, output, session) {
       coord_equal() +
       theme(legend.position = "none",
             plot.background = element_rect(fill = "#010039"),
-            
-            plot.margin = unit(c(0, 0, 0, 0), 'cm'),
-            panel.background = element_blank())
+            plot.margin = unit(c(-1, -1,-1, -1), 'cm'),
+            panel.background = element_rect(fill = "#010039"))
+    
+    
     
     girafe_circles_viz <- girafe(ggobj = circles_viz,
-                                 options = list(opts_sizing(rescale = T)))  
+                                 options = list(opts_sizing(rescale = T))
+                                )  
     girafe_circles_viz
   })
+
   output$circles <- renderGirafe({
     circles_data()
   })

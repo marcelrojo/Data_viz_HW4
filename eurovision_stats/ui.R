@@ -94,8 +94,8 @@ dashboardPage(
         width=4,
         box(sliderInput("circles_percentage", "Select Minimum Presence Percentage:", 
                         min = 1,
-                        max = 40,
-                        value = 3, 
+                        max = 10,
+                        value = 2.8, 
                         step = 0.1,
                         pre = "", post = "%"),
             width=12)
@@ -228,7 +228,7 @@ dashboardPage(
         )
       )),
       fluidRow(
-        column(10, align = "center",
+        column(12, align = "center",
                h3("Welcome to EuroViz'on - Eurovision Statistics Visualization Dashboard!"),
                p("This interactive dashboard visualizes some of the most intriguing statistics from past Eurovision Song Contests. If you're an Eurovision fan or simply love data and graphs, you've found the right place! The name EuroViz'on is a play on the words Eurovision and Visualization (Viz) – the two things we love the most! The dashboard's theme is inspired by the vibrant and colorful theming of the ESC.", style = "text-align:justify;"),
                h4("Main Page"),
